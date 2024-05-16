@@ -1,17 +1,16 @@
 package com.duy.assignment.service;
 
-import com.duy.assignment.entity.User;
-
+import com.duy.assignment.dto.UserDTO;
 import java.util.List;
 
 public interface UserService {
-    List<User> findAllUsers();
+    List<UserDTO> findAllUsers();
 
-    User findUserByUsername(String username);
+    UserDTO findUserById(String uuid);
 
-    User save(User user);
+    UserDTO add(UserDTO userDTO);
 
-    User update(String username, User user);
+    UserDTO update(UserDTO userDTO);
 
-    void  deleteByUsername(String username);
+    void deleteById(String uuid);
 }

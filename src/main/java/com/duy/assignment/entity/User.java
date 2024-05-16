@@ -1,36 +1,37 @@
 package com.duy.assignment.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.UUID;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder(builderClassName = "Builder", toBuilder = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends AuditEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID user_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "user_id")
+    String userId;
 
-    private String username;
+    String username;
 
-    private String password;
+    String password;
 
     @Column(name = "full_name")
-    private String fullName;
+    String fullName;
 
     @Column(name = "phone_number")
-    private String phoneNumber;
+    String phoneNumber;
 
-    private String email;
+    String email;
 
-    private String role;
+    String role;
 
-    private boolean enabled;
+    boolean enabled;
 
 }

@@ -1,8 +1,9 @@
 package com.duy.assignment.rest;
 
-import com.duy.assignment.entity.User;
+import com.duy.assignment.dto.UserDTO;
 import com.duy.assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,34 +18,28 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.findAllUsers();
     }
 
-    @GetMapping("/users/{username}")
-    public User getUserByUsername(@PathVariable String username) {
-        return userService.findUserByUsername(username);
+    @GetMapping("/users/{uuid}")
+    public UserDTO getUserByUuid(@PathVariable String uuid) {
+        return userService.findUserById(uuid);
     }
 
     @PostMapping("/users")
-    public User addUser(@RequestBody User user) {
-        return userService.save(user);
+    public UserDTO addUser(@RequestBody UserDTO userDTO) {
+        return userService.add(userDTO);
     }
 
-    @PutMapping("/users/{username}")
-    public User updateUser(@PathVariable String username, @RequestBody User user) {
-        return userService.update(username, user);
+    @PutMapping("/users")
+    public UserDTO updateUser(@RequestBody UserDTO userDTO) {
+        return userService.update(userDTO);
     }
 
-    @DeleteMapping("/users/{username}")
-    public String deleteUser(@PathVariable String username) {
-        User user = userService.findUserByUsername(username);
-
-        if (user == null) {
-            throw new RuntimeException("Did not find user with username - " + username);
-        }
-
-        userService.deleteByUsername(username);
-        return "Deleted";
+    @DeleteMapping("/users/{uuid}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String uuid) {
+        userService.deleteById(uuid);
+        return ResponseEntity.ok().build();
     }
 }
