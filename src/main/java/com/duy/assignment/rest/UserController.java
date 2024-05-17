@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/admin")
 public class UserController {
     private final UserService userService;
 
@@ -25,11 +26,6 @@ public class UserController {
     @GetMapping("/users/{uuid}")
     public UserDTO getUserByUuid(@PathVariable String uuid) {
         return userService.findUserById(uuid);
-    }
-
-    @PostMapping("/users")
-    public UserDTO addUser(@RequestBody UserDTO userDTO) {
-        return userService.add(userDTO);
     }
 
     @PutMapping("/users")
