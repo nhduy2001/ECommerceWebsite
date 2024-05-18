@@ -20,7 +20,7 @@ public class JWTServiceImplement implements JWTService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 300000))
+                .expiration(new Date(System.currentTimeMillis() + 3000))
                 .signWith(getSignInKey())
                 .compact();
     }
