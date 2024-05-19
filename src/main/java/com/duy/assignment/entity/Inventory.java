@@ -5,21 +5,22 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "brands")
+@Table(name = "inventory")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Brand {
+public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "brand_id")
-    int brandId;
+    @Column(name = "inventory_id")
+    int inventoryId;
 
-    @Column(name = "brand_name", length = 50)
-    String brandName;
+    @Column(name = "in_stock")
+    int inStock;
 
-    @Column(name = "brand_image")
-    String brandImage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    Product product;
 }

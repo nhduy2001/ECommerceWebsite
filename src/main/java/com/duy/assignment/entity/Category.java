@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "categories")
 @Data
@@ -17,12 +20,9 @@ public class Category extends AuditEntity {
     @Column(name = "category_id")
     int categoryId;
 
-    @Column(name = "category_name")
+    @Column(name = "category_name", length = 50)
     String categoryName;
 
-    @Column(name = "ram")
-    int ram;
-
-    @Column(name = "internal_storage")
-    int internalStorage;
+    @ManyToMany(mappedBy = "categories")
+    private Set<Product> products = new HashSet<>();
 }

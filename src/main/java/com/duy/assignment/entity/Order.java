@@ -5,21 +5,19 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "brands")
+@Table(name = "orders")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Brand {
+public class Order extends AuditEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "brand_id")
-    int brandId;
+    @Column(name = "order_id")
+    int orderId;
 
-    @Column(name = "brand_name", length = 50)
-    String brandName;
-
-    @Column(name = "brand_image")
-    String brandImage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    User user;
 }
