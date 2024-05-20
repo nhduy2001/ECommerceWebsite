@@ -35,13 +35,16 @@ public class Product extends AuditEntity{
     @Column(length = 30)
     String color;
 
+    @Column(name = "screen_size")
+    double screenSize;
+
     @Column(name = "ram")
     int ram;
 
     @Column(name = "internal_storage")
     int internalStorage;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
