@@ -6,6 +6,8 @@ import com.duy.assignment.mapper.ProductMapper;
 import com.duy.assignment.repository.ProductRepository;
 import com.duy.assignment.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,10 +26,16 @@ public class ProductServiceImplement implements ProductService {
 
 
     @Override
-    public List<ProductDTO> findAll() {
-        List a = productRepository.findAll();
+    public List<ProductDTO> findAll(String keyword) {
+        int pageSize = 10;
 
-        return productMapper.toDTOs(a);
+        Pageable pageable = PageRequest.of(1 - 1, pageSize);
+
+        if (keyword != null) {
+            return productMapper.toDTOs(productRepository.search(keyword));
+        }
+
+        return productMapper.toDTOs(productRepository.findAll());
     }
 
     @Override

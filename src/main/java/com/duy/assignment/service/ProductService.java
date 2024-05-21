@@ -5,7 +5,7 @@ import com.duy.assignment.dto.ProductDTO;
 import java.util.List;
 
 public interface ProductService {
-    List<ProductDTO> findAll();
+    List<ProductDTO> findAll(String keyword);
 
     ProductDTO findById(int id);
 

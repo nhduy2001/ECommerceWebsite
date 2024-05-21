@@ -28,7 +28,8 @@ public class Product extends AuditEntity{
     @Column(length = 100)
     String image;
 
-    double average_rating;
+    @Column(name = "average_rating")
+    double averageRating;
 
     int price;
 
@@ -44,7 +45,7 @@ public class Product extends AuditEntity{
     @Column(name = "internal_storage")
     int internalStorage;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
