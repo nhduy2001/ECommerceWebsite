@@ -14,12 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final ProductService productService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService, ProductService productService) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.productService = productService;
     }
 
     @PostMapping("/categories")
