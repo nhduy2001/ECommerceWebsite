@@ -5,6 +5,7 @@ import com.duy.assignment.dto.RefreshToken;
 import com.duy.assignment.dto.SignInDTO;
 import com.duy.assignment.dto.UserDTO;
 import com.duy.assignment.service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signUp")
-    public UserDTO signUp(@RequestBody UserDTO userDTO) {
+    public UserDTO signUp(@RequestBody @Valid UserDTO userDTO) {
         return authenticationService.signUp(userDTO);
     }
 

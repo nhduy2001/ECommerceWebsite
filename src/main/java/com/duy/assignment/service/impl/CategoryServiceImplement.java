@@ -15,6 +15,7 @@ import java.util.Optional;
 public class CategoryServiceImplement implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private static String categoryNotFound = "Did not find category with id - ";
 
     @Autowired
     public CategoryServiceImplement(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
@@ -31,7 +32,7 @@ public class CategoryServiceImplement implements CategoryService {
     public CategoryDTO findCategoryById(int id) {
         return categoryMapper.toDTO(categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Did not find category with id - " + id)));
+                        new RuntimeException(categoryNotFound + id)));
     }
 
     @Override
@@ -45,7 +46,7 @@ public class CategoryServiceImplement implements CategoryService {
         Category category = categoryMapper.toEntity(categoryDTO);
         categoryRepository.findById(categoryDTO.getCategoryId())
                 .orElseThrow(() ->
-                        new RuntimeException("Did not find category with id - " + categoryDTO.getCategoryId()));
+                        new RuntimeException(categoryNotFound + categoryDTO.getCategoryId()));
         Category existCategory = category.toBuilder().build();
         categoryRepository.save(existCategory);
         return categoryMapper.toDTO(existCategory);
@@ -56,7 +57,7 @@ public class CategoryServiceImplement implements CategoryService {
         Optional<Category> category = categoryRepository.findById(id);
 
         if (category.isEmpty()) {
-            throw new RuntimeException("Did not find category with id - " + id);
+            throw new RuntimeException(categoryNotFound + id);
         }
 
         categoryRepository.deleteById(id);

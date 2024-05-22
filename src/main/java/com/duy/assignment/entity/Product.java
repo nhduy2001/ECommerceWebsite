@@ -9,7 +9,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "products")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
@@ -51,7 +52,7 @@ public class Product extends AuditEntity{
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    Set<Category> categories = new HashSet<>();
+    Set<Category> categories;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")

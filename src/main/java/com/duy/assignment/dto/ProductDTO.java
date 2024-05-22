@@ -1,15 +1,13 @@
 package com.duy.assignment.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 @Data
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductDTO {
     int productId;
