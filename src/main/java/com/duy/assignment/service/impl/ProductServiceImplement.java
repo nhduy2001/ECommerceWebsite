@@ -1,7 +1,10 @@
 package com.duy.assignment.service.impl;
 
+import com.duy.assignment.dto.ColorDTO;
 import com.duy.assignment.dto.ProductDTO;
+import com.duy.assignment.entity.Color;
 import com.duy.assignment.entity.Product;
+import com.duy.assignment.mapper.ColorMapper;
 import com.duy.assignment.mapper.ProductMapper;
 import com.duy.assignment.repository.ProductRepository;
 import com.duy.assignment.service.ProductService;
@@ -10,31 +13,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductServiceImplement implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ColorMapper colorMapper;
     private static final String productNotFound = "Did not find product with id - ";
     private static final int defaultPageSize = 10;
 
     @Autowired
-    public ProductServiceImplement(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductServiceImplement(ProductRepository productRepository, ProductMapper productMapper, ColorMapper colorMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.colorMapper = colorMapper;
     }
 
-
     @Override
-    public List<ProductDTO> findAll(int pageNum, String ram, String screenSize, String storage) {
+    public List<ProductDTO> findAll(int pageNum, Integer ram, String screenSize, Integer storage, String sortDir) {
         Specification<Product> spec = Specification.where(null);
-
-        Pageable pageable = PageRequest.of(pageNum - 1, defaultPageSize);
+        Pageable pageable;
+        if ("desc".equals(sortDir)) {
+            pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").descending());
+        } else if (sortDir == null) {
+            pageable = PageRequest.of(pageNum - 1, defaultPageSize);
+        } else {
+            pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").ascending());
+        }
 
         spec = applyFilterConditions(spec, ram, screenSize, storage);
 
@@ -44,16 +54,17 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> findAllProductsBySearch(String keyword, int pageNum) {
-        Pageable pageable = PageRequest.of(pageNum - 1, defaultPageSize);
+    public List<ProductDTO> findAllProductsBySearch(String keyword, int pageNum, String sortDir) {
+        Pageable pageable;
+        Specification<Product> spec = ProductSpecification.searchProducts(keyword);
 
-        Page<Product> productsPage;
-
-        if (keyword != null && !keyword.isEmpty()) {
-            productsPage = productRepository.search(keyword, pageable);
+        if (sortDir != null && sortDir.equalsIgnoreCase("desc")) {
+            pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").descending());
         } else {
-            productsPage = productRepository.findAll(pageable);
+            pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").ascending());
         }
+
+        Page<Product> productsPage = productRepository.findAll(spec, pageable);
 
         return productMapper.toDTOs(productsPage.getContent());
     }
@@ -67,94 +78,65 @@ public class ProductServiceImplement implements ProductService {
 
     @Override
     public ProductDTO add(ProductDTO productDTO) {
-        Product product = productRepository.save(productMapper.toEntity(productDTO));
-        return productMapper.toDTO(product);
+        Product product = productMapper.toEntity(productDTO);
+        handleColors(productDTO, product);
+        Product savedProduct = productRepository.save(product);
+        return productMapper.toDTO(savedProduct);
     }
 
     @Override
     public ProductDTO update(ProductDTO productDTO) {
-        Product product = productMapper.toEntity(productDTO);
-        productRepository.findById(productDTO.getProductId())
-                .orElseThrow(() ->
-                        new RuntimeException(productNotFound + productDTO.getProductId()));
-        Product existProduct = product.toBuilder().build();
-        productRepository.save(existProduct);
-        return productMapper.toDTO(existProduct);
+        Product existProduct = productRepository.findById(productDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found: " + productDTO.getProductId()));
+
+        // Update basic fields
+        productMapper.updateProductFromDTO(productDTO, existProduct);
+
+        // Update colors
+        existProduct.getColors().clear();
+        handleColors(productDTO, existProduct);
+
+        Product updatedProduct = productRepository.save(existProduct);
+        return productMapper.toDTO(updatedProduct);
     }
 
     @Override
-    public void deleteById(int id) {
-        Optional<Product> product = productRepository.findById(id);
+    @Transactional
+    public void deleteById(int productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        if (product.isEmpty()) {
-            throw new RuntimeException(productNotFound + id);
-        }
-        productRepository.deleteById(id);
+        // Clear relationships with categories
+        product.getCategories().forEach(category -> category.getProducts().remove(product));
+        product.getCategories().clear();
+
+        // Product colors will be deleted due to orphanRemoval = true
+        productRepository.delete(product);
     }
 
-    private double convertInchesType(String screenSize) {
-        if (screenSize.equals("tren-6.5-inch")) {
-            return 6.6;
-        }
-        return 6.5;
-    }
-
-    private int convertRamType(String ram) {
-        int ramConverted = 0;
-        switch (ram) {
-            case "4":
-                ramConverted = 4;
-                break;
-            case "6":
-                ramConverted = 6;
-                break;
-
-            case "8":
-                ramConverted = 8;
-                break;
-
-            case "12":
-                ramConverted = 12;
-                break;
-        }
-        return ramConverted;
-    }
-
-    private int convertStorageType(String storage) {
-        int storageConverted = 0;
-        switch (storage) {
-            case "64":
-                storageConverted = 64;
-                break;
-            case "128":
-                storageConverted = 128;
-                break;
-
-            case "256":
-                storageConverted = 256;
-                break;
-
-            default:
-                storageConverted = 512;
-                break;
-        }
-        return storageConverted;
-    }
-
-    private Specification<Product> applyFilterConditions(Specification<Product> spec, String ram, String screenSize, String storage) {
-        if (ram != null && !ram.isEmpty()) {
-            spec = spec.and(ProductSpecification.ramEquals(convertRamType(ram)));
-        }
-        if (screenSize != null && !screenSize.isEmpty()) {
-            double screenSizeValue = convertInchesType(screenSize);
-            if (screenSizeValue > 6.5) {
-                spec = spec.and(ProductSpecification.screenSizeGreaterThan(6.4));
-            } else {
-                spec = spec.and(ProductSpecification.screenSizeLessThan(6.6));
+    private void handleColors(ProductDTO productDTO, Product product) {
+        if (productDTO.getColorDTOs() != null && !productDTO.getColorDTOs().isEmpty()) {
+            for (ColorDTO colorDTO : productDTO.getColorDTOs()) {
+                Color color = colorMapper.toEntity(colorDTO);
+                color.setProduct(product);
+                product.getColors().add(color);
             }
         }
-        if (storage != null && !storage.isEmpty()) {
-            spec = spec.and(ProductSpecification.storageEquals(convertStorageType(storage)));
+    }
+
+    private Specification<Product> applyFilterConditions(Specification<Product> spec, Integer ram, String screenSize, Integer storage) {
+        if (ram != null) {
+            spec = spec.and(ProductSpecification.ramEquals(ram));
+        }
+        if (screenSize != null && !screenSize.isEmpty()) {
+            if (screenSize.equals("tren-6.5-inch")) {
+                spec = spec.and(ProductSpecification.screenSizeGreaterThan(6.55));
+            } else {
+                spec = spec.and(ProductSpecification.screenSizeLessThan(6.55));
+            }
+        }
+        if (storage != null) {
+            spec = spec.and(ProductSpecification.storageEquals(storage));
         }
         return spec;
     }

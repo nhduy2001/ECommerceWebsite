@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,21 +21,14 @@ public class Product extends AuditEntity{
     @Column(name = "product_id")
     int productId;
 
-    @Column(length = 100)
     String name;
 
     String description;
-
-    @Column(length = 100)
-    String image;
 
     @Column(name = "average_rating")
     double averageRating;
 
     int price;
-
-    @Column(length = 30)
-    String color;
 
     @Column(name = "screen_size")
     double screenSize;
@@ -45,6 +38,9 @@ public class Product extends AuditEntity{
 
     @Column(name = "internal_storage")
     int internalStorage;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Color> colors;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

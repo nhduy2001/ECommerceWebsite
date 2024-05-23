@@ -1,30 +1,47 @@
 package com.duy.assignment.rest;
 
 import com.duy.assignment.dto.CategoryDTO;
-import com.duy.assignment.dto.ProductDTO;
 import com.duy.assignment.service.CategoryService;
-import com.duy.assignment.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final ProductService productService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService, ProductService productService) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.productService = productService;
     }
 
-    @PostMapping("/categories")
+    @GetMapping
+    public List<CategoryDTO> getAllCategories(){
+        return categoryService.findAllCategories();
+    }
+
+    @GetMapping("/{id}")
+    public CategoryDTO getCategoryById(@PathVariable int id) {
+        return categoryService.findCategoryById(id);
+    }
+
+    @PostMapping
     public CategoryDTO addCategory(@RequestBody CategoryDTO categoryDTO) {
         return categoryService.add(categoryDTO);
+    }
+
+    @PutMapping
+    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDTO) {
+        return categoryService.update(categoryDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
+        categoryService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
 }

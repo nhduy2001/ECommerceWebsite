@@ -25,18 +25,16 @@ public class User extends AuditEntity implements UserDetails {
 
     String username;
 
-    @Column(length = 68)
     String password;
 
     @Column(name = "full_name")
     String fullName;
 
-    @Column(name = "phone_number", length = 15)
+    @Column(name = "phone_number")
     String phoneNumber;
 
     String email;
 
-    @Column(length = 20)
     String role;
 
     boolean confirmed;

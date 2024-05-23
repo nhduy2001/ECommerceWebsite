@@ -2,14 +2,15 @@ package com.duy.assignment.service.impl;
 
 import com.duy.assignment.dto.CategoryDTO;
 import com.duy.assignment.entity.Category;
+import com.duy.assignment.entity.Product;
 import com.duy.assignment.mapper.CategoryMapper;
 import com.duy.assignment.repository.CategoryRepository;
 import com.duy.assignment.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CategoryServiceImplement implements CategoryService {
@@ -24,7 +25,7 @@ public class CategoryServiceImplement implements CategoryService {
     }
 
     @Override
-    public List<CategoryDTO> getAllCategories() {
+    public List<CategoryDTO> findAllCategories() {
         return categoryMapper.toDTOs(categoryRepository.findAll());
     }
 
@@ -53,15 +54,20 @@ public class CategoryServiceImplement implements CategoryService {
     }
 
     @Override
-    public void deleteById(int id) {
-        Optional<Category> category = categoryRepository.findById(id);
+    @Transactional
+    public void deleteById(int categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryId));
 
-        if (category.isEmpty()) {
-            throw new RuntimeException(categoryNotFound + id);
+        // Clear relationships with products
+        for (Product product : category.getProducts()) {
+            product.getCategories().remove(category);
         }
 
-        categoryRepository.deleteById(id);
-    }
+        category.getProducts().clear();
 
+        // Delete the category
+        categoryRepository.delete(category);
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.duy.assignment.configuration;
 
 import com.duy.assignment.service.UserService;
+import com.duy.assignment.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,12 +23,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    private final CustomUserDetailsService customUserDetailsService;
     private final UserService userService;
 
     @Autowired
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter, UserService userService) {
+    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
+                                 CustomUserDetailsService customUserDetailsService,
+                                 UserService userService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customUserDetailsService = customUserDetailsService;
         this.userService = userService;
     }
 
@@ -69,7 +73,7 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService.userDetailsService());
+        authenticationProvider.setUserDetailsService(customUserDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }

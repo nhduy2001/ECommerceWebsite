@@ -5,9 +5,9 @@ import com.duy.assignment.dto.ProductDTO;
 import java.util.List;
 
 public interface ProductService {
-    List<ProductDTO> findAll(int pageNum, String ram, String screenSize, String storage);
+    List<ProductDTO> findAll(int pageNum, Integer ram, String screenSize, Integer storage, String sortDir);
 
-    List<ProductDTO> findAllProductsBySearch(String keyword, int pageNum);
+    List<ProductDTO> findAllProductsBySearch(String keyword, int pageNum, String sortDir);
 
     ProductDTO findById(int id);
 

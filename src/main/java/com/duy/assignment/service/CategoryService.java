@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 public interface CategoryService {
-    List<CategoryDTO> getAllCategories();
+    List<CategoryDTO> findAllCategories();
 
     CategoryDTO findCategoryById(int id);
 

@@ -2,6 +2,7 @@ package com.duy.assignment.configuration;
 
 import com.duy.assignment.service.JWTService;
 import com.duy.assignment.service.UserService;
+import com.duy.assignment.service.impl.CustomUserDetailsService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,11 +23,15 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
     private final UserService userService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    public JwtAuthenticationFilter(JWTService jwtService, UserService userService) {
+    public JwtAuthenticationFilter(JWTService jwtService,
+                                   UserService userService,
+                                   CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -44,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         username = jwtService.exactUserName(jwt);
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(username);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

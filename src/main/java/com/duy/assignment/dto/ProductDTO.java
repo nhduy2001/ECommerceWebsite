@@ -3,6 +3,7 @@ package com.duy.assignment.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.Set;
 @Data
 @AllArgsConstructor
@@ -13,13 +14,12 @@ public class ProductDTO {
     int productId;
     String name;
     String description;
-    String image;
     double averageRating;
     int price;
-    String color;
     double screenSize;
     int ram;
     int internalStorage;
     Set<Integer> categoryIds;
+    List<ColorDTO> colorDTOs;
     int brandId;
 }

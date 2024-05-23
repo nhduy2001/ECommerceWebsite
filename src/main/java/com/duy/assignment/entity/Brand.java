@@ -17,7 +17,7 @@ public class Brand {
     @Column(name = "brand_id")
     int brandId;
 
-    @Column(name = "brand_name", length = 50)
+    @Column(name = "brand_name")
     String brandName;
 
     @Column(name = "brand_image")
