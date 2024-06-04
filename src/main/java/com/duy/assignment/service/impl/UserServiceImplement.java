@@ -66,4 +66,10 @@ public class UserServiceImplement implements UserService {
         userRepository.deleteById(uuid);
     }
 
+    @Override
+    public String findRole(String username) {
+        User user = userRepository.findUserByUsername(username).orElseThrow();
+        return user.getRole();
+    }
+
 }

@@ -13,4 +13,6 @@ public interface UserService {
     UserDTO update(UserDTO userDTO);
 
     void deleteById(String uuid);
+
+    String findRole(String username);
 }

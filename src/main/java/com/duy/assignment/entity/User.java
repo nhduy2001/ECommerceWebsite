@@ -12,7 +12,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
@@ -36,6 +37,8 @@ public class User extends AuditEntity implements UserDetails {
     String email;
 
     String role;
+
+    String address;
 
     boolean confirmed;
 

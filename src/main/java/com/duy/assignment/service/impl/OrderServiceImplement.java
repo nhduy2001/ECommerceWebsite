@@ -1,0 +1,70 @@
+package com.duy.assignment.service.impl;
+
+import com.duy.assignment.dto.OrderDTO;
+import com.duy.assignment.entity.CartDetails;
+import com.duy.assignment.entity.Order;
+import com.duy.assignment.entity.OrderDetails;
+import com.duy.assignment.entity.enumType.OrderPayType;
+import com.duy.assignment.entity.enumType.OrderStatus;
+import com.duy.assignment.mapper.OrderMapper;
+import com.duy.assignment.repository.*;
+import com.duy.assignment.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class OrderServiceImplement implements OrderService {
+    private final OrderRepository orderRepository;
+    private final OrderDetailsRepository orderDetailsRepository;
+    private final CartRepository cartRepository;
+    private final CartDetailsRepository cartDetailsRepository;
+    private final UserRepository userRepository;
+    private final OrderMapper orderMapper;
+
+    @Autowired
+    public OrderServiceImplement(OrderRepository orderRepository,
+                                 OrderDetailsRepository orderDetailsRepository,
+                                 CartDetailsRepository cartDetailsRepository,
+                                 CartRepository cartRepository,
+                                 UserRepository userRepository,
+                                 OrderMapper orderMapper) {
+        this.orderRepository = orderRepository;
+        this.orderDetailsRepository = orderDetailsRepository;
+        this.cartDetailsRepository = cartDetailsRepository;
+        this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
+        this.orderMapper = orderMapper;
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO addOrder(OrderDTO orderDTO, String username) {
+        Order order = orderMapper.toEntity(orderDTO);
+        order.setPay(false);
+        order.setPayType(OrderPayType.CASH);
+        order.setStatus(OrderStatus.ORDERED);
+        order.setUser(userRepository.findUserByUsername(username).get());
+        orderRepository.save(order);
+
+        int existCartId = cartRepository.findCartByUser_Username(username).get().getCartId();
+
+        List<CartDetails> cartDetails = cartDetailsRepository.findAllByCart_CartId(existCartId);
+
+        for (CartDetails cartDetail : cartDetails) {
+            cartDetail.setComplete(true);
+            OrderDetails orderDetails = new OrderDetails();
+            orderDetails.setOrder(order);
+            orderDetails.setProduct(cartDetail.getProduct());
+            orderDetails.setColorId(cartDetail.getColorId());
+            orderDetailsRepository.save(orderDetails);
+        }
+
+        cartDetailsRepository.deleteByIsCompleteTrue();
+        cartRepository.deleteById(existCartId);
+
+        return orderMapper.ToDTO(order);
+    }
+}

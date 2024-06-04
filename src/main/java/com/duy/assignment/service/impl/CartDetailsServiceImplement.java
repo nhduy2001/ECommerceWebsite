@@ -83,7 +83,7 @@ public class CartDetailsServiceImplement implements CartDetailsService {
     public List<CartDetailsDTO> getCart(String username) {
         Optional<Cart> existCart = cartRepository.findCartByUser_Username(username);
         if (existCart.isEmpty()) {
-            throw new RuntimeException("The user has no cart");
+            return List.of();
         } else {
             List<CartDetails> existCartDetail = cartDetailsRepository.findAllByCart_CartId(existCart.get().getCartId());
             return cartDetailsMapper.toDTOs(existCartDetail);

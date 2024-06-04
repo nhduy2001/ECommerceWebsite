@@ -4,6 +4,7 @@ import com.duy.assignment.dto.*;
 import com.duy.assignment.service.AuthenticationService;
 import com.duy.assignment.service.FeedbackService;
 import com.duy.assignment.service.ProductService;
+import com.duy.assignment.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,14 +20,17 @@ public class PublicController {
     private final AuthenticationService authenticationService;
     private final ProductService productService;
     private final FeedbackService feedbackService;
+    private final UserService userService;
 
     @Autowired
     public PublicController(AuthenticationService authenticationService,
                             ProductService productService,
-                            FeedbackService feedbackService) {
+                            FeedbackService feedbackService,
+                            UserService userService) {
         this.authenticationService = authenticationService;
         this.productService = productService;
         this.feedbackService = feedbackService;
+        this.userService = userService;
     }
 
     @PostMapping("/signUp")
@@ -73,6 +77,11 @@ public class PublicController {
     @GetMapping("/feedback/{id}")
     public List<FeedbackDTO> getAllFeedbacks(@PathVariable int id) {
         return feedbackService.getAllFeedbacks(id);
+    }
+
+    @GetMapping("/role")
+    public String getUserByUsername(@RequestParam String username) {
+        return userService.findRole(username);
     }
 
 }

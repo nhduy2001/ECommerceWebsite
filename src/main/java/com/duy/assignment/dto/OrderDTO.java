@@ -1,20 +1,24 @@
 package com.duy.assignment.dto;
 
+import com.duy.assignment.entity.enumType.OrderPayType;
+import com.duy.assignment.entity.enumType.OrderStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserDTO {
+public class OrderDTO {
+    int orderId;
     String userId;
-    String username;
-    String password;
     String fullName;
     String phoneNumber;
     String email;
     String address;
-    String role;
-    boolean confirmed;
+    int totalPrice;
+    OrderStatus status;
+    OrderPayType payType;
+    boolean isPay;
 }

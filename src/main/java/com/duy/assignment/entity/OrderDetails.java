@@ -24,4 +24,6 @@ public class OrderDetails {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     Order order;
+
+    int colorId;
 }
