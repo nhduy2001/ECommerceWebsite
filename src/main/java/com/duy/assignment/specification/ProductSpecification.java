@@ -32,10 +32,10 @@ public class ProductSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (keyword != null && !keyword.isEmpty()) {
-                String likeKeyword = "%" + keyword + "%";
+                String likeKeyword = "%" + keyword.toLowerCase() + "%";
 
                 // Tìm kiếm theo tên sản phẩm
-                predicates.add(builder.like(root.get("name"), likeKeyword));
+                predicates.add(builder.like(builder.lower(root.get("name")), likeKeyword));
 
                 // Join với bảng categories và tìm kiếm theo tên category
                 Join<Product, Category> categoryJoin = root.join("categories", JoinType.LEFT);
@@ -43,6 +43,21 @@ public class ProductSpecification {
 
                 // (Optional) Tìm kiếm theo tên brand
                 predicates.add(builder.like(root.get("brand").get("brandName"), likeKeyword));
+            }
+
+            return builder.or(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<Product> getExactProducts(String name) {
+        return (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (name != null && !name.isEmpty()) {
+                String likeKeyword = name.toLowerCase();
+
+                // Tìm kiếm theo tên sản phẩm
+                predicates.add(builder.like(builder.lower(root.get("name")), likeKeyword));
             }
 
             return builder.or(predicates.toArray(new Predicate[0]));

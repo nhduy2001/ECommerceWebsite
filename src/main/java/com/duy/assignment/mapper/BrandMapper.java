@@ -1,25 +1,15 @@
 package com.duy.assignment.mapper;
 
+import com.duy.assignment.dto.BrandDTO;
 import com.duy.assignment.entity.Brand;
-import com.duy.assignment.repository.BrandRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@Component
-public class BrandMapper {
-    private final BrandRepository brandRepository;
+import java.util.List;
 
-    @Autowired
-    public BrandMapper(BrandRepository brandRepository) {
-        this.brandRepository = brandRepository;
-    }
-
-    public Brand map(int brandId) {
-        return brandRepository.findById(brandId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid brand ID: " + brandId));
-    }
-
-    public int map(Brand brand) {
-        return brand.getBrandId();
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface BrandMapper {
+    BrandDTO toDTO(Brand brand);
+    Brand toEntity(BrandDTO brandDTO);
+    List<BrandDTO> toDTOs(List<Brand> brands);
 }

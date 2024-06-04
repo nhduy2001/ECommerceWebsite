@@ -1,4 +1,4 @@
-package com.duy.assignment.rest;
+package com.duy.assignment.controller;
 
 import com.duy.assignment.dto.CategoryDTO;
 import com.duy.assignment.service.CategoryService;

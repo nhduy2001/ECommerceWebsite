@@ -39,6 +39,9 @@ public class Product extends AuditEntity{
     @Column(name = "internal_storage")
     int internalStorage;
 
+    @Column(name = "featured")
+    boolean featured;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Color> colors;
 

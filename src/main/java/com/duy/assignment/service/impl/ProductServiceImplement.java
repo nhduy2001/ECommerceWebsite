@@ -10,6 +10,7 @@ import com.duy.assignment.repository.ProductRepository;
 import com.duy.assignment.service.ProductService;
 import com.duy.assignment.specification.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImplement implements ProductService {
@@ -26,6 +34,8 @@ public class ProductServiceImplement implements ProductService {
     private final ColorMapper colorMapper;
     private static final String productNotFound = "Did not find product with id - ";
     private static final int defaultPageSize = 10;
+    @Value("${upload.path}")
+    private String uploadPath;
 
     @Autowired
     public ProductServiceImplement(ProductRepository productRepository, ProductMapper productMapper, ColorMapper colorMapper) {
@@ -35,7 +45,7 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> findAll(int pageNum, Integer ram, String screenSize, Integer storage, String sortDir) {
+    public Page<ProductDTO> findAll(int pageNum, Integer ram, String screenSize, Integer storage, String sortDir, String keyword, String name) {
         Specification<Product> spec = Specification.where(null);
         Pageable pageable;
         if ("desc".equals(sortDir)) {
@@ -46,27 +56,11 @@ public class ProductServiceImplement implements ProductService {
             pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").ascending());
         }
 
-        spec = applyFilterConditions(spec, ram, screenSize, storage);
+        spec = applyFilterConditions(spec, ram, screenSize, storage, keyword, name);
 
         Page<Product> productsPage = productRepository.findAll(spec, pageable);
 
-        return productMapper.toDTOs(productsPage.getContent());
-    }
-
-    @Override
-    public List<ProductDTO> findAllProductsBySearch(String keyword, int pageNum, String sortDir) {
-        Pageable pageable;
-        Specification<Product> spec = ProductSpecification.searchProducts(keyword);
-
-        if (sortDir != null && sortDir.equalsIgnoreCase("desc")) {
-            pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").descending());
-        } else {
-            pageable = PageRequest.of(pageNum - 1, defaultPageSize, Sort.by("price").ascending());
-        }
-
-        Page<Product> productsPage = productRepository.findAll(spec, pageable);
-
-        return productMapper.toDTOs(productsPage.getContent());
+        return productsPage.map(productMapper::toDTO);
     }
 
     @Override
@@ -77,8 +71,15 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
+    public List<ProductDTO> findByName(String name) {
+        List<Product> productList = productRepository.findProductsByName(name);
+        return productMapper.toDTOs(productList);
+    }
+
+    @Override
     public ProductDTO add(ProductDTO productDTO) {
         Product product = productMapper.toEntity(productDTO);
+        product.getColors().clear();
         handleColors(productDTO, product);
         Product savedProduct = productRepository.save(product);
         return productMapper.toDTO(savedProduct);
@@ -86,6 +87,13 @@ public class ProductServiceImplement implements ProductService {
 
     @Override
     public ProductDTO update(ProductDTO productDTO) {
+
+        int featuredProductsCount = productRepository.countByFeaturedTrue();
+
+        if (productDTO.isFeatured() && featuredProductsCount >= 5) {
+            throw new RuntimeException("You can only have up to 5 featured products.");
+        }
+
         Product existProduct = productRepository.findById(productDTO.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found: " + productDTO.getProductId()));
 
@@ -114,6 +122,34 @@ public class ProductServiceImplement implements ProductService {
         productRepository.delete(product);
     }
 
+    @Override
+    public List<ProductDTO> displayAll() {
+        return productMapper.toDTOs(productRepository.findAll());
+    }
+
+    @Override
+    public String uploadImage(MultipartFile file) {
+        if (file.isEmpty()) {
+            return "File is empty";
+        }
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String newFilename = UUID.randomUUID() + "_" + originalFilename;
+            Path path = Paths.get(uploadPath, newFilename);
+            Files.copy(file.getInputStream(), path);
+
+            return newFilename;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "File upload failed";
+        }
+    }
+
+    @Override
+    public List<ProductDTO> findFeaturedProducts() {
+        return productMapper.toDTOs(productRepository.findAllByFeaturedTrue());
+    }
+
     private void handleColors(ProductDTO productDTO, Product product) {
         if (productDTO.getColorDTOs() != null && !productDTO.getColorDTOs().isEmpty()) {
             for (ColorDTO colorDTO : productDTO.getColorDTOs()) {
@@ -124,7 +160,7 @@ public class ProductServiceImplement implements ProductService {
         }
     }
 
-    private Specification<Product> applyFilterConditions(Specification<Product> spec, Integer ram, String screenSize, Integer storage) {
+    private Specification<Product> applyFilterConditions(Specification<Product> spec, Integer ram, String screenSize, Integer storage, String keyword, String name) {
         if (ram != null) {
             spec = spec.and(ProductSpecification.ramEquals(ram));
         }
@@ -137,6 +173,12 @@ public class ProductServiceImplement implements ProductService {
         }
         if (storage != null) {
             spec = spec.and(ProductSpecification.storageEquals(storage));
+        }
+        if (keyword != null) {
+            spec = spec.and(ProductSpecification.searchProducts(keyword));
+        }
+        if (name != null) {
+            spec = spec.and(ProductSpecification.getExactProducts(name));
         }
         return spec;
     }

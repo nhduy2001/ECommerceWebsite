@@ -1,6 +1,5 @@
 package com.duy.assignment.dto;
 
-import com.duy.assignment.entity.AuditEntity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,7 +8,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryDTO extends AuditEntity {
-    int categoryId;
-    String categoryName;
+public class FeedbackDTO {
+    private int feedbackId;
+    private double rating;
+    private String comment;
+    private String username;
+    private int productId;
 }

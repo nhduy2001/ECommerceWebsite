@@ -2,6 +2,7 @@ package com.duy.assignment.configuration;
 
 import com.duy.assignment.service.UserService;
 import com.duy.assignment.service.impl.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,57 +19,87 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
-    private final UserService userService;
 
     @Autowired
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
-                                 CustomUserDetailsService customUserDetailsService,
-                                 UserService userService) {
+                                 CustomUserDetailsService customUserDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customUserDetailsService = customUserDetailsService;
-        this.userService = userService;
-    }
-
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(requests -> requests
-                        .anyRequest().permitAll())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
-        );
-        http.formLogin(Customizer.withDefaults());
-        http.httpBasic(Customizer.withDefaults());
-
-        return http.build();
     }
 
 //    @Bean
 //    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+//                    @Override
+//                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+//                        CorsConfiguration config = new CorsConfiguration();
+//                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+//                        config.setAllowedMethods(Collections.singletonList("*"));
+//                        config.setAllowCredentials(true);
+//                        config.setAllowedHeaders(Collections.singletonList("*"));
+//                        config.setExposedHeaders(Arrays.asList("Authorization"));
+//                        config.setMaxAge(3600L);
+//                        return config;
+//                    }
+//                }))
 //                .csrf(AbstractHttpConfigurer::disable)
 //                .authorizeHttpRequests(requests -> requests
-//                        .requestMatchers("/api/v1/auth/**").permitAll()
-//                        .requestMatchers("/api/v1/admin/**").hasAuthority("admin")
-//                        .requestMatchers("/api/v1/user/**").hasAuthority("user")
-//                        .anyRequest().authenticated())
+//                        .anyRequest().permitAll())
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .authenticationProvider(authenticationProvider()).addFilterBefore(
-//                jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
+//                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
 //        );
 //        http.formLogin(Customizer.withDefaults());
 //        http.httpBasic(Customizer.withDefaults());
 //
 //        return http.build();
 //    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowCredentials(true);
+                        config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setExposedHeaders(Arrays.asList("Authorization"));
+                        config.setMaxAge(3600L);
+                        return config;
+                    }
+                }))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("admin")
+                        .requestMatchers("/api/v1/user/**").hasAuthority("user")
+                        .requestMatchers("/api/v1/public/**").permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider()).addFilterBefore(
+                jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
+        );
+        http.formLogin(Customizer.withDefaults());
+        http.httpBasic(Customizer.withDefaults());
+
+        return http.build();
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

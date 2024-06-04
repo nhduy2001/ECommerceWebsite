@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {BrandMapper.class, CategoryIdMapper.class, ColorMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {BrandIdMapper.class, CategoryIdMapper.class, ColorMapper.class})
 public interface ProductMapper {
     @Mapping(source = "brand.brandId", target = "brandId")
     @Mapping(source = "categories", target = "categoryIds")

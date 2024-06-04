@@ -1,12 +1,15 @@
 package com.duy.assignment.entity;
 
+import com.duy.assignment.entity.enumType.OrderPayType;
+import com.duy.assignment.entity.enumType.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
@@ -20,4 +23,27 @@ public class Order extends AuditEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
+
+    @Column(name = "full_name")
+    String fullName;
+
+    @Column(name = "phone_number")
+    String phoneNumber;
+
+    String email;
+
+    String address;
+
+    @Column(name = "total_price")
+    int totalPrice;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pay_type")
+    private OrderPayType payType;
+
+    @Column(name = "is_pay")
+    boolean isPay;
 }

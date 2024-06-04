@@ -16,7 +16,7 @@ import java.util.List;
 public class CategoryServiceImplement implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    private static String categoryNotFound = "Did not find category with id - ";
+    private final static String categoryNotFound = "Did not find category with id - ";
 
     @Autowired
     public CategoryServiceImplement(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {

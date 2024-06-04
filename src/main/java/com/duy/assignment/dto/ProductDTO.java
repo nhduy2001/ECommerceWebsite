@@ -5,7 +5,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.Set;
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
@@ -21,5 +22,6 @@ public class ProductDTO {
     int internalStorage;
     Set<Integer> categoryIds;
     List<ColorDTO> colorDTOs;
+    boolean featured;
     int brandId;
 }

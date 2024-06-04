@@ -29,4 +29,6 @@ public class CartDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     Product product;
+
+    int colorId;
 }

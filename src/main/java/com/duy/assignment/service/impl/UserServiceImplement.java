@@ -36,6 +36,13 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
+    public UserDTO findUserByUsername(String username) {
+        return userMapper.toDTO(userRepository.findUserByUsername(username)
+                .orElseThrow(()->
+                        new RuntimeException("Did not find user withusername - " + username)));
+    }
+
+    @Override
     public UserDTO update(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         userRepository.findById(user.getUserId())
