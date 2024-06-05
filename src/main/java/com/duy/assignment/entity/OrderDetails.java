@@ -26,4 +26,6 @@ public class OrderDetails {
     Order order;
 
     int colorId;
+
+    int quantity;
 }

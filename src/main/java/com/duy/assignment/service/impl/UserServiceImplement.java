@@ -6,6 +6,8 @@ import com.duy.assignment.mapper.UserMapper;
 import com.duy.assignment.repository.UserRepository;
 import com.duy.assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,11 +17,15 @@ import java.util.Optional;
 public class UserServiceImplement implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ApplicationContext applicationContext;
 
     @Autowired
-    public UserServiceImplement(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImplement(UserRepository userRepository,
+                                UserMapper userMapper,
+                                ApplicationContext applicationContext) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -39,7 +45,7 @@ public class UserServiceImplement implements UserService {
     public UserDTO findUserByUsername(String username) {
         return userMapper.toDTO(userRepository.findUserByUsername(username)
                 .orElseThrow(()->
-                        new RuntimeException("Did not find user withusername - " + username)));
+                        new RuntimeException("Did not find user with username - " + username)));
     }
 
     @Override
@@ -50,7 +56,8 @@ public class UserServiceImplement implements UserService {
                         new RuntimeException("Did not find user with uuid - " + user.getUserId()));
 
         User existUser = user.toBuilder().build();
-
+        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+        existUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(existUser);
         return userMapper.toDTO(existUser);
     }

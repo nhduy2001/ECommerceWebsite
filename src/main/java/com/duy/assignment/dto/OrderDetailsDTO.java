@@ -13,4 +13,5 @@ public class OrderDetailsDTO {
     int productId;
     int orderId;
     int colorId;
+    int quantity;
 }

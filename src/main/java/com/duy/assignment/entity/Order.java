@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Table(name = "orders")
 @Getter
@@ -46,4 +48,7 @@ public class Order extends AuditEntity{
 
     @Column(name = "is_pay")
     boolean isPay;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    List<OrderDetails> orderDetails;
 }

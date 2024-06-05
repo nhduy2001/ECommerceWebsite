@@ -11,9 +11,11 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface OrderMapper {
     @Mapping(source = "user.userId", target = "userId")
+    @Mapping(source = "orderDetails", target = "orderDetailsDTOs")
     OrderDTO ToDTO(Order order);
 
     @Mapping(source = "userId", target = "user.userId")
+    @Mapping(source = "orderDetailsDTOs", target = "orderDetails")
     Order toEntity(OrderDTO orderDTO);
 
     @Mapping(source = "user.userId", target = "userId")

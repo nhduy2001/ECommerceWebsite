@@ -5,6 +5,8 @@ import com.duy.assignment.entity.enumType.OrderStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,4 +23,5 @@ public class OrderDTO {
     OrderStatus status;
     OrderPayType payType;
     boolean isPay;
+    List<OrderDetailsDTO> orderDetailsDTOs;
 }

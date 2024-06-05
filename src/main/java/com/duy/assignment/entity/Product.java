@@ -43,7 +43,7 @@ public class Product extends AuditEntity{
     boolean featured;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Color> colors;
+    List<Color> colors;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

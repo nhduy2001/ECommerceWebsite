@@ -11,7 +11,10 @@ import com.duy.assignment.service.AuthenticationService;
 import com.duy.assignment.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,17 +39,21 @@ public class AuthenticationServiceImplement implements AuthenticationService {
 
     @Override
     public JWTToken signIn(SignInDTO signInDTO) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInDTO.username(), signInDTO.password()));
-        var user = userRepository.findUserByUsername(signInDTO.username())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInDTO.username(), signInDTO.password()));
+            var user = userRepository.findUserByUsername(signInDTO.username())
+                    .orElseThrow(() ->  new UsernameNotFoundException("User not found"));
 
-        var jwt = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+            var jwt = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
-        JWTToken jwtToken = new JWTToken();
-        jwtToken.setToken(jwt);
-        jwtToken.setRefreshToken(refreshToken);
-        return jwtToken;
+            JWTToken jwtToken = new JWTToken();
+            jwtToken.setToken(jwt);
+            jwtToken.setRefreshToken(refreshToken);
+            return jwtToken;
+        } catch (AuthenticationException e) {
+            throw new BadCredentialsException("Invalid username or password", e);
+        }
     }
 
     @Override
