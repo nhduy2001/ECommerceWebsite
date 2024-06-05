@@ -17,4 +17,6 @@ public class UserDTO {
     String address;
     String role;
     boolean confirmed;
+    String createdAt;
+    String lastModified;
 }

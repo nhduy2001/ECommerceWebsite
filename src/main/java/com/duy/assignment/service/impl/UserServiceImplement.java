@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,6 +79,28 @@ public class UserServiceImplement implements UserService {
     public String findRole(String username) {
         User user = userRepository.findUserByUsername(username).orElseThrow();
         return user.getRole();
+    }
+
+    @Override
+    public List<UserDTO> findAllUsersFromAdmin() {
+        List<User> userList = userRepository.findAllByRole("user");
+        List<UserDTO> userDTOS = userMapper.toDTOs(userList);
+
+        // New format for date
+        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");
+
+        for (int i = 0; i < userDTOS.size(); i++) {
+            LocalDateTime createdAt = userList.get(i).getCreatedAt();
+            LocalDateTime lastModified = userList.get(i).getLastModified();
+
+            // Format createdAt and lastModified
+            String formattedCreatedAt = createdAt.format(newFormatter);
+            String formattedLastModified = lastModified.format(newFormatter);
+
+            userDTOS.get(i).setCreatedAt(formattedCreatedAt);
+            userDTOS.get(i).setLastModified(formattedLastModified);
+        }
+        return userDTOS;
     }
 
 }

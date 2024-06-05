@@ -20,10 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -118,13 +121,34 @@ public class ProductServiceImplement implements ProductService {
         product.getCategories().forEach(category -> category.getProducts().remove(product));
         product.getCategories().clear();
 
+        for (int i = 0; i < product.getColors().size(); i++) {
+            deleteImage(product.getColors().get(i).getColorImage());
+        }
+
         // Product colors will be deleted due to orphanRemoval = true
         productRepository.delete(product);
     }
 
     @Override
     public List<ProductDTO> displayAll() {
-        return productMapper.toDTOs(productRepository.findAll());
+        List<Product> productList = productRepository.findAll();
+        List<ProductDTO> productDTOList = productMapper.toDTOs(productList);
+
+        // New format for date
+        DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");
+
+        for (int i = 0; i < productDTOList.size(); i++) {
+            LocalDateTime createdAt = productList.get(i).getCreatedAt();
+            LocalDateTime lastModified = productList.get(i).getLastModified();
+
+            // Format createdAt and lastModified
+            String formattedCreatedAt = createdAt.format(newFormatter);
+            String formattedLastModified = lastModified.format(newFormatter);
+
+            productDTOList.get(i).setCreatedAt(formattedCreatedAt);
+            productDTOList.get(i).setLastModified(formattedLastModified);
+        }
+        return productDTOList;
     }
 
     @Override
@@ -181,5 +205,19 @@ public class ProductServiceImplement implements ProductService {
             spec = spec.and(ProductSpecification.getExactProducts(name));
         }
         return spec;
+    }
+
+    private void deleteImage(String imageName) {
+        String imagePath = "/Users/hoangduy/Documents/testUpload/";
+        File imageFile = new File(imagePath+imageName);
+        if (imageFile.exists()) {
+            if (imageFile.delete()) {
+                System.out.println("Delete Completely");
+            } else {
+                System.out.println("Cannot Delete");
+            }
+        } else {
+            System.out.println("Image is not exist");
+        }
     }
 }

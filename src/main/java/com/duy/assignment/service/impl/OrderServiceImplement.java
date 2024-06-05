@@ -94,4 +94,29 @@ public class OrderServiceImplement implements OrderService {
         }
         return orderDTOList;
     }
+
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        return orderMapper.toDTOs(orderRepository.findAll());
+    }
+
+    @Override
+    public void deleteOrder(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        orderRepository.delete(order);
+    }
+
+    @Override
+    public OrderDTO updateStatus(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        switch (order.getStatus()) {
+            case OrderStatus.ORDERED -> order.setStatus(OrderStatus.DELIVERING);
+            case OrderStatus.DELIVERING -> {
+                order.setStatus(OrderStatus.COMPLETED);
+                order.setPay(true);
+            }
+        }
+        orderRepository.save(order);
+        return orderMapper.ToDTO(order);
+    }
 }

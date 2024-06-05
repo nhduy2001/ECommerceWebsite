@@ -3,6 +3,7 @@ package com.duy.assignment.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 @Getter
@@ -24,4 +25,6 @@ public class ProductDTO {
     List<ColorDTO> colorDTOs;
     boolean featured;
     int brandId;
+    String createdAt;
+    String lastModified;
 }

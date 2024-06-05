@@ -15,4 +15,6 @@ public interface UserService {
     void deleteById(String uuid);
 
     String findRole(String username);
+
+    List<UserDTO> findAllUsersFromAdmin();
 }
