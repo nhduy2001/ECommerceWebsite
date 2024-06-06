@@ -32,9 +32,18 @@ public class AuthenticationServiceImplement implements AuthenticationService {
     @Override
     public UserDTO signUp(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user = userRepository.save(user);
-        return userMapper.toDTO(user);
+
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        } else if (userRepository.existsByPhoneNumber(user.getPhoneNumber())){
+            throw new RuntimeException("Phone number already exists");
+        } else {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setRole("user");
+            user.setConfirmed(true);
+            user = userRepository.save(user);
+            return userMapper.toDTO(user);
+        }
     }
 
     @Override

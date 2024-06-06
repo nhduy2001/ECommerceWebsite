@@ -31,11 +31,6 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
-    public List<UserDTO> findAllUsers() {
-        return userMapper.toDTOs(userRepository.findAll());
-    }
-
-    @Override
     public UserDTO findUserById(String uuid) {
         return userMapper.toDTO(userRepository.findById(uuid)
                 .orElseThrow(()->
@@ -57,13 +52,16 @@ public class UserServiceImplement implements UserService {
                 .orElseThrow(() ->
                         new RuntimeException("Did not find user with uuid - " + user.getUserId()));
 
-        User existUser = user.toBuilder().build();
-        PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
-        existUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userRepository.save(existUser);
-        return userMapper.toDTO(existUser);
+        if (userRepository.existsByPhoneNumber(user.getPhoneNumber())){
+            throw new RuntimeException("Phone number already exists");
+        } else {
+            User existUser = user.toBuilder().build();
+            PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+            existUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            userRepository.save(existUser);
+            return userMapper.toDTO(existUser);
+        }
     }
-
 
     @Override
     public void deleteById(String uuid) {

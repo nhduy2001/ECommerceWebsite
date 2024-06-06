@@ -3,6 +3,7 @@ package com.duy.assignment.controller.customer;
 import com.duy.assignment.dto.FeedbackDTO;
 import com.duy.assignment.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class CustomerFeedbackController {
     }
 
     @PostMapping
-    public FeedbackDTO addFeedback(@RequestBody FeedbackDTO feedbackDTO) {
-        return feedbackService.addFeedback(feedbackDTO);
+    public ResponseEntity<?> addFeedback(@RequestBody FeedbackDTO feedbackDTO) {
+        return ResponseEntity.ok(feedbackService.addFeedback(feedbackDTO));
     }
 }

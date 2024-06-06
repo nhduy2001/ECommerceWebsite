@@ -1,12 +1,9 @@
 package com.duy.assignment.controller.admin;
 
-import com.duy.assignment.dto.OrderDTO;
 import com.duy.assignment.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin/orders")
@@ -19,14 +16,13 @@ public class AdminOrderController {
     }
 
     @GetMapping
-    public List<OrderDTO> getAllOrders() {
-        return orderService.getAllOrders();
+    public ResponseEntity<?> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    public OrderDTO updateStatus(@PathVariable int id) {
-        System.out.println(id);
-        return orderService.updateStatus(id);
+    public ResponseEntity<?> updateStatus(@PathVariable int id) {
+        return ResponseEntity.ok(orderService.updateStatus(id));
     }
 
     @DeleteMapping("/{id}")

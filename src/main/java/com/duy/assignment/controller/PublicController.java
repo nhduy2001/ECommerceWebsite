@@ -7,12 +7,8 @@ import com.duy.assignment.service.ProductService;
 import com.duy.assignment.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/public")
@@ -34,12 +30,12 @@ public class PublicController {
     }
 
     @PostMapping("/signUp")
-    public UserDTO signUp(@RequestBody @Valid UserDTO userDTO) {
-        return authenticationService.signUp(userDTO);
+    public ResponseEntity<?> signUp(@RequestBody @Valid UserDTO userDTO) {
+        return ResponseEntity.ok(authenticationService.signUp(userDTO));
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<JWTToken> signIn(@RequestBody SignInDTO signInDTO) {
+    public ResponseEntity<?> signIn(@RequestBody SignInDTO signInDTO) {
         return ResponseEntity.ok(authenticationService.signIn(signInDTO));
     }
 
@@ -49,39 +45,39 @@ public class PublicController {
     }
 
     @GetMapping("/products/featured")
-    public List<ProductDTO> getAllFeaturedProducts() {
-        return productService.findFeaturedProducts();
+    public ResponseEntity<?> getAllFeaturedProducts() {
+        return ResponseEntity.ok(productService.findFeaturedProducts());
     }
 
     @GetMapping("/products")
-    public Page<ProductDTO> getAllProductsByFilter(@RequestParam(value = "page", defaultValue = "1") int page,
+    public ResponseEntity<?> getAllProductsByFilter(@RequestParam(value = "page", defaultValue = "1") int page,
                                                    @RequestParam(value = "ram", required = false) Integer ram,
                                                    @RequestParam(value = "screen_size", required = false) String screenSize,
                                                    @RequestParam(value = "storage", required = false) Integer storage,
                                                    @RequestParam(name = "sortDir", required = false) String sortDir,
                                                    @RequestParam(value = "keyword", required = false) String keyword,
                                                    @RequestParam(value = "name", required = false) String name) {
-        return productService.findAll(page, ram, screenSize, storage, sortDir, keyword, name);
+        return ResponseEntity.ok(productService.findAll(page, ram, screenSize, storage, sortDir, keyword, name));
     }
 
     @GetMapping("/products/{id}")
-    public ProductDTO getProductsById(@PathVariable int id) {
-        return productService.findById(id);
+    public ResponseEntity<?> getProductsById(@PathVariable int id) {
+        return ResponseEntity.ok(productService.findById(id));
     }
 
     @GetMapping("/products/by/{name}")
-    public List<ProductDTO> getProductsByName(@PathVariable String name) {
-        return productService.findByName(name);
+    public ResponseEntity<?> getProductsByName(@PathVariable String name) {
+        return ResponseEntity.ok(productService.findByName(name));
     }
 
     @GetMapping("/feedback/{id}")
-    public List<FeedbackDTO> getAllFeedbacks(@PathVariable int id) {
-        return feedbackService.getAllFeedbacks(id);
+    public ResponseEntity<?> getAllFeedbacks(@PathVariable int id) {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks(id));
     }
 
     @GetMapping("/role")
-    public String getUserByUsername(@RequestParam String username) {
-        return userService.findRole(username);
+    public ResponseEntity<?> getUserByUsername(@RequestParam String username) {
+        return ResponseEntity.ok(userService.findRole(username));
     }
 
 }

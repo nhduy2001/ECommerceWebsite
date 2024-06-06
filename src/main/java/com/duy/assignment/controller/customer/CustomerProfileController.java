@@ -2,7 +2,9 @@ package com.duy.assignment.controller.customer;
 
 import com.duy.assignment.dto.UserDTO;
 import com.duy.assignment.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -18,12 +20,12 @@ public class CustomerProfileController {
     }
 
     @GetMapping
-    public UserDTO getUserByUserName(Principal principal) {
-        return userService.findUserByUsername(principal.getName());
+    public ResponseEntity<?> getUserByUserName(Principal principal) {
+        return ResponseEntity.ok(userService.findUserByUsername(principal.getName()));
     }
 
     @PutMapping
-    public UserDTO updateUser(@RequestBody UserDTO userDTO) {
-        return userService.update(userDTO);
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.update(userDTO));
     }
 }

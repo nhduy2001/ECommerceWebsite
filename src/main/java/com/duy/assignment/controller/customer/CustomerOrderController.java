@@ -3,6 +3,7 @@ package com.duy.assignment.controller.customer;
 import com.duy.assignment.dto.OrderDTO;
 import com.duy.assignment.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,12 +20,12 @@ public class CustomerOrderController {
     }
 
     @PostMapping
-    public OrderDTO addOrder(@RequestBody OrderDTO orderDTO, Principal principal) {
-        return orderService.addOrder(orderDTO, principal.getName());
+    public ResponseEntity<?> addOrder(@RequestBody OrderDTO orderDTO, Principal principal) {
+        return ResponseEntity.ok(orderService.addOrder(orderDTO, principal.getName()));
     }
 
     @GetMapping
-    public List<OrderDTO> getOrders(Principal principal) {
-        return orderService.getOder(principal.getName());
+    public ResponseEntity<?> getOrders(Principal principal) {
+        return ResponseEntity.ok(orderService.getOder(principal.getName()));
     }
 }

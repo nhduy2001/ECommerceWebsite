@@ -4,8 +4,6 @@ import com.duy.assignment.dto.UserDTO;
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> findAllUsers();
-
     UserDTO findUserById(String uuid);
 
     UserDTO findUserByUsername(String username);

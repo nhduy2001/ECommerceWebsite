@@ -1,12 +1,9 @@
 package com.duy.assignment.controller.admin;
 
-import com.duy.assignment.dto.UserDTO;
 import com.duy.assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin/users")
@@ -19,17 +16,17 @@ public class AdminAccountController {
     }
 
     @GetMapping
-    public List<UserDTO> getAllUserFromAdmin() {
-        return userService.findAllUsersFromAdmin();
+    public ResponseEntity<?> getAllUserFromAdmin() {
+        return ResponseEntity.ok(userService.findAllUsersFromAdmin());
     }
 
     @GetMapping("/{uuid}")
-    public UserDTO getUserById(@PathVariable String uuid) {
-        return userService.findUserById(uuid);
+    public ResponseEntity<?> getUserById(@PathVariable String uuid) {
+        return ResponseEntity.ok(userService.findUserById(uuid));
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String uuid) {
+    public ResponseEntity<?> deleteUser(@PathVariable String uuid) {
         userService.deleteById(uuid);
         return ResponseEntity.ok().build();
     }

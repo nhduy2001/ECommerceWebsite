@@ -3,6 +3,7 @@ package com.duy.assignment.controller.customer;
 import com.duy.assignment.dto.CartDetailsDTO;
 import com.duy.assignment.service.CartDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,17 +20,17 @@ public class CustomerCartController {
     }
 
     @PostMapping
-    public CartDetailsDTO addToCart(@RequestBody CartDetailsDTO cartDetailsDTO, Principal principal) {
-        return cartDetailsService.addToCart(cartDetailsDTO, principal.getName());
+    public ResponseEntity<?> addToCart(@RequestBody CartDetailsDTO cartDetailsDTO, Principal principal) {
+        return ResponseEntity.ok(cartDetailsService.addToCart(cartDetailsDTO, principal.getName()));
     }
 
     @GetMapping
-    public List<CartDetailsDTO> getCart(Principal principal) {
-        return cartDetailsService.getCart(principal.getName());
+    public ResponseEntity<?> getCart(Principal principal) {
+        return ResponseEntity.ok(cartDetailsService.getCart(principal.getName()));
     }
 
     @PutMapping
-    public List<CartDetailsDTO> updateCart(@RequestBody List<CartDetailsDTO>  cartDetailsDTOS) {
-        return cartDetailsService.updateCart(cartDetailsDTOS);
+    public ResponseEntity<?> updateCart(@RequestBody List<CartDetailsDTO>  cartDetailsDTOS) {
+        return ResponseEntity.ok(cartDetailsService.updateCart(cartDetailsDTOS));
     }
 }

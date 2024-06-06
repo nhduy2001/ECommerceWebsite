@@ -21,23 +21,23 @@ public class AdminProductController {
     }
 
     @GetMapping("/all")
-    public List<ProductDTO> getAllProducts () {
-        return productService.displayAll();
+    public ResponseEntity<?> getAllProducts () {
+        return ResponseEntity.ok(productService.displayAll());
     }
 
     @GetMapping("/{id}")
-    public ProductDTO getProductsById(@PathVariable int id) {
-        return productService.findById(id);
+    public ResponseEntity<?> getProductsById(@PathVariable int id) {
+        return ResponseEntity.ok(productService.findById(id));
     }
 
     @PostMapping
-    public ProductDTO addProduct(@RequestBody @Valid ProductDTO productDTO) {
-        return productService.add(productDTO);
+    public ResponseEntity<?> addProduct(@RequestBody @Valid ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.add(productDTO));
     }
 
     @PutMapping
-    public ProductDTO updateProduct(@RequestBody ProductDTO productDTO) {
-        return productService.update(productDTO);
+    public ResponseEntity<?> updateProduct(@RequestBody @Valid ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.update(productDTO));
     }
 
     @DeleteMapping("/{id}")

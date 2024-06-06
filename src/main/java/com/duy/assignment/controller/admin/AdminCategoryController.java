@@ -2,11 +2,10 @@ package com.duy.assignment.controller.admin;
 
 import com.duy.assignment.dto.CategoryDTO;
 import com.duy.assignment.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin/categories")
@@ -19,23 +18,23 @@ public class AdminCategoryController {
     }
 
     @GetMapping
-    public List<CategoryDTO> getAllCategories(){
-        return categoryService.findAllCategories();
+    public ResponseEntity<?> getAllCategories(){
+        return ResponseEntity.ok(categoryService.findAllCategories());
     }
 
     @GetMapping("/{id}")
-    public CategoryDTO getCategoryById(@PathVariable int id) {
-        return categoryService.findCategoryById(id);
+    public ResponseEntity<?> getCategoryById(@PathVariable int id) {
+        return ResponseEntity.ok(categoryService.findCategoryById(id));
     }
 
     @PostMapping
-    public CategoryDTO addCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.add(categoryDTO);
+    public ResponseEntity<?> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(categoryService.add(categoryDTO));
     }
 
     @PutMapping
-    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.update(categoryDTO);
+    public ResponseEntity<?> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(categoryService.update(categoryDTO));
     }
 
     @DeleteMapping("/{id}")
