@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class CategoryDTO extends AuditEntity {
     int categoryId;
 
-    @NotBlank
+    @NotBlank(message = "Category name is mandatory")
     String categoryName;
 }

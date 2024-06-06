@@ -38,19 +38,27 @@ public class CategoryServiceImplement implements CategoryService {
 
     @Override
     public CategoryDTO add(CategoryDTO categoryDTO) {
-        Category category = categoryRepository.save(categoryMapper.toEntity(categoryDTO));
-        return categoryMapper.toDTO(category);
+        if (categoryRepository.existsByCategoryName(categoryDTO.getCategoryName())) {
+            throw new RuntimeException("Category name already exists");
+        } else {
+            Category category = categoryRepository.save(categoryMapper.toEntity(categoryDTO));
+            return categoryMapper.toDTO(category);
+        }
     }
 
     @Override
     public CategoryDTO update(CategoryDTO categoryDTO) {
-        Category category = categoryMapper.toEntity(categoryDTO);
-        categoryRepository.findById(categoryDTO.getCategoryId())
-                .orElseThrow(() ->
-                        new RuntimeException(categoryNotFound + categoryDTO.getCategoryId()));
-        Category existCategory = category.toBuilder().build();
-        categoryRepository.save(existCategory);
-        return categoryMapper.toDTO(existCategory);
+        if (categoryRepository.existsByCategoryName(categoryDTO.getCategoryName())) {
+            throw new RuntimeException("Category name already exists");
+        } else {
+            Category category = categoryMapper.toEntity(categoryDTO);
+            categoryRepository.findById(categoryDTO.getCategoryId())
+                    .orElseThrow(() ->
+                            new RuntimeException(categoryNotFound + categoryDTO.getCategoryId()));
+            Category existCategory = category.toBuilder().build();
+            categoryRepository.save(existCategory);
+            return categoryMapper.toDTO(existCategory);
+        }
     }
 
     @Override

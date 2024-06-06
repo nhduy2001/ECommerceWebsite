@@ -208,8 +208,7 @@ public class ProductServiceImplement implements ProductService {
     }
 
     private void deleteImage(String imageName) {
-        String imagePath = "/Users/hoangduy/Documents/testUpload/";
-        File imageFile = new File(imagePath+imageName);
+        File imageFile = new File(uploadPath+"/"+imageName);
         if (imageFile.exists()) {
             if (imageFile.delete()) {
                 System.out.println("Delete Completely");

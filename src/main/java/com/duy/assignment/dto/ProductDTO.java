@@ -1,6 +1,6 @@
 package com.duy.assignment.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,32 +16,41 @@ import java.util.Set;
 public class ProductDTO {
     int productId;
 
-    @NotBlank
+    @NotBlank(message = "Product name is mandatory")
     String name;
 
-    @NotBlank
+    @NotBlank(message = "Product description is mandatory")
     String description;
 
     double averageRating;
 
-    @NotBlank
+    @NotNull(message = "Price is mandatory")
+    @Min(value = 1, message = "Price cannot be 0")
     int price;
 
+    @NotNull(message = "Screen Size is mandatory")
+    @Min(value = 1, message = "Screen Size cannot be 0")
     double screenSize;
+
+    @NotNull(message = "RAM is mandatory")
+    @Min(value = 1, message = "RAM cannot be 0")
     int ram;
+
+    @NotNull(message = "Storage is mandatory")
+    @Min(value = 1, message = "Storage cannot be 0")
     int internalStorage;
 
-    @NotBlank
+    @NotEmpty(message = "Please choose category")
     Set<Integer> categoryIds;
 
-    @NotBlank
+    @NotEmpty(message = "Please add color")
     List<ColorDTO> colorDTOs;
 
     boolean featured;
 
-    @NotBlank
+    @NotNull(message = "Please choose brand")
     int brandId;
-    
+
     String createdAt;
     String lastModified;
 }
