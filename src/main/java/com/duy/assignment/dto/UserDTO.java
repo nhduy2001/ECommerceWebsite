@@ -25,7 +25,7 @@ public class UserDTO {
     String fullName;
 
     @NotBlank(message = "Phone number is mandatory")
-    @Size(min = 10, max = 11)
+    @Size(min = 10, max = 11, message = "Phone must be 10 or 11 numbers")
     String phoneNumber;
 
     String email;

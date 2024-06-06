@@ -2,12 +2,12 @@ package com.duy.assignment.controller.customer;
 
 import com.duy.assignment.dto.OrderDTO;
 import com.duy.assignment.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/customer/orders")
@@ -20,7 +20,7 @@ public class CustomerOrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addOrder(@RequestBody OrderDTO orderDTO, Principal principal) {
+    public ResponseEntity<?> addOrder(@RequestBody @Valid OrderDTO orderDTO, Principal principal) {
         return ResponseEntity.ok(orderService.addOrder(orderDTO, principal.getName()));
     }
 

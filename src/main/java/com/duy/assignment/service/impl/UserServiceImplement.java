@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,11 +49,11 @@ public class UserServiceImplement implements UserService {
     @Override
     public UserDTO update(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
-        userRepository.findById(user.getUserId())
+        User checkPhone = userRepository.findById(user.getUserId())
                 .orElseThrow(() ->
                         new RuntimeException("Did not find user with uuid - " + user.getUserId()));
 
-        if (userRepository.existsByPhoneNumber(user.getPhoneNumber())){
+        if (!checkPhone.getPhoneNumber().equals(userDTO.getPhoneNumber()) &&  userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
             throw new RuntimeException("Phone number already exists");
         } else {
             User existUser = user.toBuilder().build();

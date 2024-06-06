@@ -52,7 +52,7 @@ public class OrderServiceImplement implements OrderService {
         order.setPay(false);
         order.setPayType(OrderPayType.CASH);
         order.setStatus(OrderStatus.ORDERED);
-        order.setUser(userRepository.findUserByUsername(username).get());
+        order.setUser(userRepository.findUserByUsername(username).orElseThrow());
         orderRepository.save(order);
 
         int existCartId = cartRepository.findCartByUser_Username(username).get().getCartId();
